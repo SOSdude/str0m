@@ -2,3 +2,6 @@
 # (can be removed once link.exe is fixed)
 [target.x86_64-pc-windows-msvc]
 linker = "rust-lld"
+
+[registries.sos]
+index = "sparse+https://git.saveourserver.com/api/packages/sos/cargo/"

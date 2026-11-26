@@ -1,0 +1,9 @@
+# Read by sos-ci: what it publishes and builds, and how it checks them. Paths are
+# relative to this file, or to the repository root with a leading /.
+rust:
+  fork: build-ci
+  libs: [str0m]
+  feature-sets: ['str0m-proto/dtls,is/sha1,str0m/aws-lc-rs', 'str0m-proto/dtls,is/sha1,str0m/openssl',
+    'str0m-proto/dtls,is/sha1,str0m/rust-crypto']
+  docs-feature-set: [default]
+  exclude: [str0m-wincrypto]

@@ -1,0 +1,22 @@
+name: Sync upstream
+
+on:
+  # Schedules run on the default branch only, which is the fork's.
+  schedule:
+    - cron: '17 5 * * *'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ${{ vars.SOS_PLAN_RUNNER || 'docker' }}
+    container:
+      image: ${{ format('{0}/sos/ci-plan:v3', vars.PACKAGE_REGISTRY || 'git.saveourserver.com') }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: https://git.saveourserver.com/sos/sos-ci/actions/sync-upstream@v3
+        with:
+          upstream: https://github.com/algesten/str0m
+          fork-branch: build-ci
+          fix-branch: 'fix'

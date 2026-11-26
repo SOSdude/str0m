@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [build-ci]
+  push:
+    branches: [build-ci]
+  # Run by hand (Actions > CI > Run workflow), e.g. for a workspace the plan skipped.
+  # It only checks, unless `publish` is ticked (on build-ci).
+  workflow_dispatch:
+    inputs:
+      workspaces:
+        description: Workspaces to run (directories, space-separated), or all
+        default: all
+      publish:
+        description: Also publish and release what is not out yet (build-ci only)
+        type: boolean
+        default: false
+
+jobs:
+  ci:
+    # owner/repo form, no https:// and no runs-on: only then does Forgejo split
+    # the pipeline into a job per stage. What it publishes and builds is read
+    # from each workspace's sos-ci.yaml.
+    uses: sos/sos-ci/.forgejo/workflows/ci.yml@v3
+    secrets: inherit
+    with:
+      check-version: ${{ startsWith(github.ref, 'refs/pull/') }}
+      publish: ${{ github.ref == 'refs/heads/build-ci' && (github.event_name != 'workflow_dispatch' || format('{0}', inputs.publish) == 'true') }}
+      workspaces: ${{ inputs.workspaces }}
+      # Upstream's code fails clippy -D warnings on its tests and rustdoc's
+      # broken-link check (str0m-proto), so neither runs on the fork.
+      lint: false
+      docs: false
