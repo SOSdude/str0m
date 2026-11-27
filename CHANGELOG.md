@@ -1,5 +1,6 @@
 # Unreleased
 
+  * Set CSRCs on frame-mode writes with `Writer::csrc`
   * Reduce the bandwidth estimate when corrected RTT exceeds three seconds #1190
   * Use robust TWCC throughput estimates and align AIMD backoff with libwebrtc #1188
   * Align ALR detector defaults with GoogCC #1182

@@ -33,6 +33,8 @@ pub(crate) struct OutgoingPacket {
     pub marker: bool,
     pub nackable: bool,
     pub ext_vals: ExtensionValues,
+    pub csrc_count: usize,
+    pub csrc: [u32; 15],
     pub payload: Vec<u8>,
 }
 
@@ -76,6 +78,8 @@ impl Payloader {
             start_of_talk_spurt,
             ext_vals,
             dependency_descriptor,
+            csrc_count,
+            csrc,
             ..
         } = to_payload;
 
@@ -124,6 +128,8 @@ impl Payloader {
                 marker,
                 nackable,
                 ext_vals: pkt_ext_vals,
+                csrc_count,
+                csrc,
                 payload: data,
             });
         }
@@ -153,6 +159,7 @@ impl PacketSink for StreamTx {
             )
             .marker(packet.marker)
             .ext_vals(packet.ext_vals)
+            .csrc(&packet.csrc[..packet.csrc_count])
             .nackable(packet.nackable),
         );
     }
@@ -201,6 +208,7 @@ impl PacketSink for RedSink<'_> {
             )
             .marker(packet.marker)
             .ext_vals(packet.ext_vals)
+            .csrc(&packet.csrc[..packet.csrc_count])
             .nackable(packet.nackable),
         );
     }

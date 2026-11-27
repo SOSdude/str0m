@@ -213,6 +213,9 @@ pub(crate) struct ToPayload {
     pub ext_vals: ExtensionValues,
     /// Kept apart from `ext_vals`, since each packet of the frame gets its own descriptor.
     pub dependency_descriptor: Option<FrameDescriptor>,
+    /// Contributing source identifiers for every packet of the frame.
+    pub csrc_count: usize,
+    pub csrc: [u32; 15],
 }
 
 /// Per-(pt, rid) outgoing payloader entry stored in [`Media::payloaders`]: the codec-agnostic
@@ -622,12 +625,13 @@ impl Media {
         let aligned_mtu: usize = rtp_size - rtp_size % SRTP_BLOCK_SIZE;
         // The descriptor comes out of the payload, so packets with one stay within the size the
         // MTU allows packets without one. The packetizer has one budget, so every packet
-        // reserves room for the first packet's descriptor.
+        // reserves room for the first packet's descriptor. CSRCs take 4 bytes each the same way.
         let budget = aligned_mtu.saturating_sub(
             to_payload
                 .dependency_descriptor
                 .as_ref()
-                .map_or(0, FrameDescriptor::max_header_growth),
+                .map_or(0, FrameDescriptor::max_header_growth)
+                + 4 * to_payload.csrc_count,
         );
 
         // The RED PT to wrap into, if RED is negotiated for this codec and send-side wrapping is
