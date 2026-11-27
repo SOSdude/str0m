@@ -82,6 +82,8 @@ impl TelephonePackets {
             data,
             ext_vals: self.ext_vals.clone(),
             dependency_descriptor: None,
+            csrc_count: 0,
+            csrc: [0; 15],
         }
     }
 }

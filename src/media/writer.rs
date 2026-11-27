@@ -30,6 +30,8 @@ pub struct Writer<'a> {
     start_of_talkspurt: Option<bool>,
     tele_event: Option<TelephoneEvent>,
     ext_vals: ExtensionValues,
+    csrc_count: usize,
+    csrc: [u32; 15],
 }
 
 impl<'a> Writer<'a> {
@@ -48,6 +50,8 @@ impl<'a> Writer<'a> {
             start_of_talkspurt: None,
             tele_event: None,
             ext_vals: ExtensionValues::default(),
+            csrc_count: 0,
+            csrc: [0; 15],
         }
     }
 
@@ -92,6 +96,22 @@ impl<'a> Writer<'a> {
     pub fn audio_level(mut self, audio_level: i8, voice_activity: bool) -> Self {
         self.ext_vals.audio_level = Some(audio_level);
         self.ext_vals.voice_activity = Some(voice_activity);
+        self
+    }
+
+    /// Set CSRC on outbound frame packets
+    ///
+    /// Telephone events sent with the same write carry none.
+    ///
+    /// # Panics
+    ///
+    /// Panics if more than 15 entries are supplied.
+    pub fn csrc(mut self, csrc: &[u32]) -> Self {
+        assert!(csrc.len() <= 15, "CSRC count must be <= 15");
+
+        self.csrc = [0; 15];
+        self.csrc[..csrc.len()].copy_from_slice(csrc);
+        self.csrc_count = csrc.len();
         self
     }
 
@@ -246,6 +266,8 @@ impl<'a> Writer<'a> {
                 start_of_talk_spurt: self.start_of_talkspurt.unwrap_or(false),
                 ext_vals: self.ext_vals.clone(),
                 dependency_descriptor,
+                csrc_count: self.csrc_count,
+                csrc: self.csrc,
             })?;
         }
 

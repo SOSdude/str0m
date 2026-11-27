@@ -1,5 +1,7 @@
 # Unreleased
 
+  * Set CSRCs on frame-mode writes with `Writer::csrc`
+
 # 0.26.0
 
   * Follow libWebRTC ICE nominations after NAT rebinding #1168
