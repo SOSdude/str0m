@@ -19,7 +19,7 @@ jobs:
         with:
           upstream: https://github.com/algesten/str0m
           fork-branch: build-ci
-          fix-branch: 'fix'
+          fix-branch: 'fix/frame-csrc'
           # Pushes the fork branch rebuilt on a new release, which starts CI; it
           # needs write:repository.
           push-token: ${{ secrets.REGISTRY_TOKEN }}
